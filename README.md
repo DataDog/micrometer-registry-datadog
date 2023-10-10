@@ -52,7 +52,7 @@ import io.micrometer.datadog.DatadogMeterRegistry;
 class MicrometerDatadog {
 
    public static void main(String[] args) {
-       // initilize config
+       // initialize config
      DatadogConfig datadogConfig = new DatadogConfig() {
          @Override
          public String get(String key) {

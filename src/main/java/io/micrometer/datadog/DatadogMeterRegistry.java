@@ -29,7 +29,6 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToLongFunction;
 
 import static io.micrometer.core.instrument.util.StringEscapeUtils.escapeJson;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 /**
@@ -74,6 +73,7 @@ public class DatadogMeterRegistry extends PushMeterRegistry {
         if (statsDClient == null) {
 
             NonBlockingStatsDClientBuilder builder = new NonBlockingStatsDClientBuilder();
+            builder = builder.prefix(config.prefix());
 
             // performance tune-ables
             builder = builder.enableTelemetry(config.enableClientSideTelemetry())

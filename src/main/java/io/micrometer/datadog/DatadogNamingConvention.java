@@ -44,7 +44,7 @@ public class DatadogNamingConvention implements NamingConvention {
         if (!Character.isLetter(sanitized.charAt(0))) {
             sanitized = "m." + sanitized;
         }
-        return StringUtils.truncate(sanitized, MAX_NAME_LENGTH);
+        return StringUtils.truncate(sanitized, MAX_NAME_LENGTH).replaceAll("\\.+$", "");
     }
 
     /**
