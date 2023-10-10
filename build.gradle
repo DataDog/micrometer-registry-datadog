@@ -14,6 +14,11 @@ buildscript {
     }
 }
 
+// we depend on this environment variable.
+tasks.withType(Exec) {
+    environment 'DD_AGENT_HOST', 'localhost'
+}
+
 apply plugin: 'java'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'signing'
@@ -32,4 +37,5 @@ dependencies {
     implementation 'org.slf4j:slf4j-api'
     testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.11'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
+    testImplementation "com.github.tomakehurst:wiremock-jre8:2.27.2"
 }
