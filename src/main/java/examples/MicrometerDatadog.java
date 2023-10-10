@@ -7,8 +7,11 @@ import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.ToDoubleFunction;
 
 public class MicrometerDatadog {
 
@@ -31,11 +34,11 @@ public class MicrometerDatadog {
         tags.add(Tag.of("env","dev"));
 
         // Create counter
-        Counter counter = Counter
+        Counter counter = registry.newCounter(Counter
                 .builder("counter_example")
                 .description("a description of what this counter does") // optional
                 .tags(tags) // optional
-                .register(registry);
+                .register(registry).getId());
         // Increment your counter
         counter.increment();
         counter.increment(2);
@@ -83,14 +86,31 @@ public class MicrometerDatadog {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            counter.increment(1);
-            manual_gauge.set(42);
-            summary.record(10);
         });
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    counter.increment(1);
+                    manual_gauge.set(42);
+                    summary.record(10);
+
+                    try {
+                        Thread.sleep(1500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.submit(r);
 
 
         try {
             Thread.sleep(10000000);
+            executor.shutdown();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

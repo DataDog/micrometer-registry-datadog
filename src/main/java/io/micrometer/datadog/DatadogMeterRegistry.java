@@ -228,6 +228,9 @@ public class DatadogMeterRegistry extends PushMeterRegistry {
     }
 
     private Meter.Id idWithSuffix(Meter.Id id, String suffix) {
+        if (suffix.isEmpty()) {
+            return id;
+        }
         return id.withName(id.getName() + "." + suffix);
     }
 
