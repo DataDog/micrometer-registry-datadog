@@ -1,0 +1,35 @@
+group 'com.datadoghq.micrometer'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'signing'
+
+compileJava   {
+    sourceCompatibility = '20'
+    targetCompatibility = '20'
+}
+
+dependencies {
+    implementation "io.micrometer:micrometer-core:1.11.4"
+    implementation 'junit:junit:4.13.2'
+    testImplementation "io.micrometer:micrometer-test:1.11.4"
+    implementation 'com.datadoghq:java-dogstatsd-client:4.2.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.9'
+    implementation 'org.slf4j:slf4j-api'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.11'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
+}
