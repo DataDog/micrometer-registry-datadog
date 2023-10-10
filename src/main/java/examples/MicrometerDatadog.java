@@ -83,11 +83,14 @@ public class MicrometerDatadog {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            counter.increment(1);
+            manual_gauge.set(42);
+            summary.record(10);
         });
 
 
         try {
-            Thread.sleep(100000);
+            Thread.sleep(10000000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -4,11 +4,11 @@ import com.timgroup.statsd.NonBlockingStatsDClientBuilder;
 import com.timgroup.statsd.StatsDClient;
 
 import io.micrometer.core.instrument.*;
-import io.micrometer.core.instrument.cumulative.CumulativeCounter;
-import io.micrometer.core.instrument.cumulative.CumulativeDistributionSummary;
-import io.micrometer.core.instrument.cumulative.CumulativeFunctionCounter;
-import io.micrometer.core.instrument.cumulative.CumulativeFunctionTimer;
-import io.micrometer.core.instrument.cumulative.CumulativeTimer;
+import io.micrometer.core.instrument.step.StepCounter;
+import io.micrometer.core.instrument.step.StepDistributionSummary;
+import io.micrometer.core.instrument.step.StepFunctionCounter;
+import io.micrometer.core.instrument.step.StepFunctionTimer;
+import io.micrometer.core.instrument.step.StepTimer;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.core.instrument.distribution.pause.PauseDetector;
 import io.micrometer.core.instrument.internal.CumulativeHistogramLongTaskTimer;
@@ -233,17 +233,17 @@ public class DatadogMeterRegistry extends PushMeterRegistry {
 
     @Override
     public Counter newCounter(Meter.Id id) {
-        return new CumulativeCounter(id);
+        return new StepCounter(id, clock, config.step().toMillis());
     }
 
     @Override
     public DistributionSummary newDistributionSummary(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, double scale) {
-        return new CumulativeDistributionSummary(id, clock, distributionStatisticConfig, scale);
+        return new StepDistributionSummary(id, clock, distributionStatisticConfig, scale, config.step().toMillis(), true);
     }
 
     @Override
     protected Timer newTimer(Meter.Id id, DistributionStatisticConfig distributionStatisticConfig, PauseDetector pauseDetector) {
-        return new CumulativeTimer(id, clock, distributionStatisticConfig, pauseDetector, getBaseTimeUnit());
+        return new StepTimer(id, clock, distributionStatisticConfig, pauseDetector, getBaseTimeUnit(), config.step().toMillis(), true);
     }
 
     @Override
@@ -258,12 +258,12 @@ public class DatadogMeterRegistry extends PushMeterRegistry {
 
     @Override
     protected <T> FunctionTimer newFunctionTimer(Meter.Id id, T obj, ToLongFunction<T> countFunction, ToDoubleFunction<T> totalTimeFunction, TimeUnit totalTimeFunctionUnit) {
-        return new CumulativeFunctionTimer<>(id, obj, countFunction, totalTimeFunction, totalTimeFunctionUnit, getBaseTimeUnit());
+        return new StepFunctionTimer<>(id, clock, config.step().toMillis(), obj, countFunction, totalTimeFunction, totalTimeFunctionUnit, getBaseTimeUnit());
     }
 
     @Override
     protected <T> FunctionCounter newFunctionCounter(Meter.Id id, T obj, ToDoubleFunction<T> countFunction) {
-        return new CumulativeFunctionCounter<>(id, obj, countFunction);
+        return new StepFunctionCounter<>(id, clock, config.step().toMillis(), obj, countFunction);
     }
 
     @Override
